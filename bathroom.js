@@ -12,27 +12,29 @@ const now = date.getHours() * 60 + date.getMinutes();
 //         console.log("device id: " + device.id + "name: " + device.name);
 // });
 
-// dimmer bad oppe = 83786180-98f0-4b81-a585-6f4c2c25d975
-// bad lamp = 1ad891ea-7c8d-41b3-b663-8421ed621b93
+try{
+    let lamp1 = await Homey.devices.getDevice({id: '83786180-98f0-4b81-a585-6f4c2c25d975'});
+    let lamp2 = await Homey.devices.getDevice({id: '1ad891ea-7c8d-41b3-b663-8421ed621b93'});
 
-let lamp1 = await Homey.devices.getDevice({id: '83786180-98f0-4b81-a585-6f4c2c25d975'});
-let lamp2 = await Homey.devices.getDevice({id: '1ad891ea-7c8d-41b3-b663-8421ed621b93'});
-
-// the time is between 23:30 and 06:30
-if(now <= day || now > night) { 
-     lamp2.setCapabilityValue('dim', 0.01);
+    // the time is between 23:30 and 06:30
+    if(now <= day || now > night) { 
+        lamp2.setCapabilityValue('dim', 0.01);
+    }
+    // the time is between 06:30 and 20:00
+    else if ( now <= evning && now > day ) 
+    {
+        lamp1.setCapabilityValue('dim', 1.00);
+        lamp2.setCapabilityValue('dim', 1.00);
+        console.log('daytime')
+    }
+    // the time is between 20:00 and 23:30
+    else {
+        lamp1.setCapabilityValue('dim', 0.2);
+        lamp2.setCapabilityValue('dim', 0.2);
+        console.log('evning')
+    }
 }
-// the time is between 06:30 and 20:00
-else if ( now <= evning && now > day ) 
-{
-    lamp1.setCapabilityValue('dim', 1.00);
-    lamp2.setCapabilityValue('dim', 1.00);
-    console.log('daytime')
-}
-// the time is between 20:00 and 23:30
-else {
-    lamp1.setCapabilityValue('dim', 0.2);
-    lamp2.setCapabilityValue('dim', 0.2);
-    console.log('evning')
+catch (err) {
+    console.log(err)
 }
 return true
